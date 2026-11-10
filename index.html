@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canvas Didattici - Strumenti Interattivi per la Didattica</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Serif:ital,wght@0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .canvas-card {
+            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+        }
+        .canvas-card:hover {
+            transform: translateY(-4px);
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col justify-between selection:bg-amber-500 selection:text-slate-950">
+
+    <!-- NAVIGATION HEADER -->
+    <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur sticky top-0 z-30">
+        <div class="max-w-6xl mx-auto px-4 py-4 sm:px-6 lg:px-8 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <span class="text-2xl">🎓</span>
+                <div>
+                    <span class="font-extrabold text-lg text-white tracking-tight">Canvas Didattici</span>
+                    <span class="hidden sm:inline-block ml-2 text-xs px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20 font-medium">Hub Risorse LIM</span>
+                </div>
+            </div>
+            <a href="https://github.com/giuseppemastrandrea/canvas-didattici" target="_blank" rel="noopener noreferrer"
+               class="flex items-center gap-2 text-sm text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 px-3.5 py-1.5 rounded-xl border border-slate-700 transition-colors">
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path fill-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clip-rule="evenodd" />
+                </svg>
+                <span>GitHub</span>
+            </a>
+        </div>
+    </header>
+
+    <!-- HERO SECTION -->
+    <main class="max-w-6xl mx-auto px-4 py-12 sm:px-6 lg:px-8 flex-grow w-full">
+        <div class="text-center max-w-3xl mx-auto mb-14">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-800 border border-slate-700 text-amber-400 text-xs font-semibold mb-4">
+                <span>✨</span> Applicazioni Interattive per la Scuola
+            </div>
+            <h1 class="text-4xl sm:text-5xl font-extrabold text-white tracking-tight leading-tight">
+                Canvas & Strumenti <br class="hidden sm:inline" />
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-500">Didattici per LIM</span>
+            </h1>
+            <p class="mt-4 text-base sm:text-lg text-slate-400 leading-relaxed">
+                Una raccolta di strumenti web interattivi progettati per le lezioni in classe e l'uso su LIM.
+                Esperienze visive, coinvolgenti e immediate per studenti e docenti.
+            </p>
+        </div>
+
+        <!-- GRID OF CANVASES -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+            
+            <!-- CARD 1: Analisi della Frase Latina -->
+            <div class="canvas-card group bg-slate-900 border border-slate-800 hover:border-amber-500/50 rounded-3xl p-6 sm:p-7 flex flex-col justify-between shadow-xl hover:shadow-2xl hover:shadow-amber-500/10 transition-all">
+                <div>
+                    <!-- Header icon & status -->
+                    <div class="flex items-center justify-between mb-5">
+                        <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-500 to-amber-700 flex items-center justify-center text-2xl shadow-lg shadow-amber-900/30">
+                            🏛️
+                        </div>
+                        <span class="px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                            Disponibile
+                        </span>
+                    </div>
+
+                    <!-- Title & Subject -->
+                    <div class="mb-3">
+                        <span class="text-xs font-bold uppercase tracking-wider text-amber-400">Latino & Sintassi</span>
+                        <h2 class="text-2xl font-bold text-white group-hover:text-amber-300 transition-colors mt-0.5">
+                            Analisi della Frase Latina
+                        </h2>
+                    </div>
+
+                    <!-- Description -->
+                    <p class="text-slate-400 text-sm leading-relaxed mb-6">
+                        Strumento interattivo per l'analisi logica e morfologica: evidenziazione guidata, frecce di concordanza SVG dinamiche, riordino sintattico in italiano e verifiche morfologiche su 3 livelli.
+                    </p>
+
+                    <!-- Feature tags -->
+                    <div class="flex flex-wrap gap-1.5 mb-6">
+                        <span class="text-xs bg-slate-800 text-slate-300 border border-slate-700 px-2.5 py-1 rounded-lg">Frecce SVG</span>
+                        <span class="text-xs bg-slate-800 text-slate-300 border border-slate-700 px-2.5 py-1 rounded-lg">Riordino Sintattico</span>
+                        <span class="text-xs bg-slate-800 text-slate-300 border border-slate-700 px-2.5 py-1 rounded-lg">3 Livelli</span>
+                        <span class="text-xs bg-slate-800 text-slate-300 border border-slate-700 px-2.5 py-1 rounded-lg">Ottimizzato LIM</span>
+                    </div>
+                </div>
+
+                <!-- Launch Button -->
+                <a href="./analisi_logica_latino.html"
+                   class="inline-flex items-center justify-center gap-2 w-full py-3 px-5 rounded-2xl font-bold text-sm bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 shadow-lg shadow-amber-500/20 hover:shadow-amber-500/40 transition-all duration-200">
+                    <span>Apri Canvas</span>
+                    <svg class="w-4 h-4 stroke-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                    </svg>
+                </a>
+            </div>
+
+            <!-- PLACEHOLDER CARD: In arrivo -->
+            <div class="bg-slate-900/40 border border-dashed border-slate-800 rounded-3xl p-6 sm:p-7 flex flex-col justify-center items-center text-center">
+                <div class="w-12 h-12 rounded-2xl bg-slate-800/80 border border-slate-700 flex items-center justify-center text-xl text-slate-400 mb-4">
+                    ➕
+                </div>
+                <h3 class="text-lg font-bold text-slate-300 mb-2">Nuovi Canvas in Arrivo</h3>
+                <p class="text-xs text-slate-500 max-w-xs leading-relaxed">
+                    Altri moduli e canvas interattivi per diverse discipline scolastiche verranno pubblicati in questo repository.
+                </p>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="border-t border-slate-800/80 bg-slate-950 py-8">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
+            <p>© 2026 Giuseppe Mastrandrea. Progetto open-source rilasciato per uso didattico.</p>
+            <div class="flex items-center gap-4">
+                <a href="https://github.com/giuseppemastrandrea/canvas-didattici" class="hover:text-slate-300 transition-colors">Repository GitHub</a>
+                <span>•</span>
+                <span>Deploy su GitHub Pages</span>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>

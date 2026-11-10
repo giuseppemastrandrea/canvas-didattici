@@ -1,0 +1,1381 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analisi della Frase Latina - LIM Interactive App</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter & Noto Serif -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Noto+Serif:ital,wght@0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        .latin-font {
+            font-family: 'Noto Serif', serif;
+        }
+        #svg-canvas {
+            pointer-events: none;
+            shape-rendering: geometricPrecision;
+        }
+        .word-card {
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+            cursor: pointer;
+            touch-action: manipulation;
+        }
+        .word-card:hover {
+            transform: translateY(-3px);
+        }
+        .slot-box {
+            min-height: 55px;
+            min-width: 80px;
+            transition: all 0.2s ease;
+        }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col justify-between overflow-x-hidden relative">
+
+    <!-- TOP HEADER / CONTROL BAR -->
+    <header class="bg-slate-800 border-b border-slate-700 p-4 shadow-lg sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+            
+            <!-- App Title -->
+            <div class="flex items-center space-x-3 w-full md:w-auto justify-between md:justify-start">
+                <div class="flex items-center space-x-3">
+                    <a href="./index.html" title="Torna all'elenco dei Canvas Didattici" class="bg-slate-700/80 hover:bg-slate-600 text-slate-200 px-3 py-2 rounded-2xl transition-colors flex items-center gap-1.5 text-xs font-bold border border-slate-600">
+                        <span>←</span> <span class="hidden sm:inline">Tutti i Canvas</span>
+                    </a>
+                    <div class="bg-amber-500 text-slate-900 font-extrabold rounded-2xl p-2.5 text-2xl shadow-md tracking-wider">
+                        🏛️ LATIN
+                    </div>
+                    <div>
+                        <h1 class="text-xl md:text-2xl font-bold text-white tracking-wide">Analisi della Frase Latina</h1>
+                        <p class="text-xs text-amber-400 font-semibold uppercase tracking-wider">Strumento Didattico per LIM</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Level Selector Buttons -->
+            <div class="flex items-center bg-slate-900 p-1.5 rounded-2xl border border-slate-700 gap-2 w-full md:w-auto justify-center">
+                <button onclick="setLevel(1)" id="lvl-btn-1" class="px-4 py-2 rounded-xl font-bold text-sm md:text-base transition-all duration-200">
+                    🟢 Livello 1
+                </button>
+                <button onclick="setLevel(2)" id="lvl-btn-2" class="px-4 py-2 rounded-xl font-bold text-sm md:text-base transition-all duration-200">
+                    🟡 Livello 2
+                </button>
+                <button onclick="setLevel(3)" id="lvl-btn-3" class="px-4 py-2 rounded-xl font-bold text-sm md:text-base transition-all duration-200">
+                    🔴 Livello 3
+                </button>
+            </div>
+
+            <!-- Sentence Dropdown (Full untruncated text) -->
+            <div class="flex items-center space-x-2 w-full md:w-auto">
+                <select id="sentence-select" onchange="loadSentence(parseInt(this.value))" class="w-full md:w-auto bg-slate-700 text-amber-300 font-bold border border-slate-600 rounded-xl px-4 py-2.5 text-sm md:text-base focus:outline-none focus:ring-2 focus:ring-amber-500 cursor-pointer shadow-inner">
+                    <!-- Dynamic Options -->
+                </select>
+            </div>
+
+        </div>
+    </header>
+
+    <!-- MAIN DISPLAY CANVAS AREA -->
+    <main id="main-area" class="flex-grow flex flex-col justify-center items-center p-4 md:p-8 relative min-h-[520px]">
+        
+        <!-- SVG Overlay for Crisp Concordanze Arrows -->
+        <svg id="svg-canvas" class="absolute inset-0 w-full h-full z-10 overflow-visible">
+            <defs>
+                <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                    <polygon points="0 0, 10 3.5, 0 7" fill="#fbbf24" />
+                </marker>
+            </defs>
+        </svg>
+
+        <!-- FULL SENTENCE HEADER BANNER -->
+        <div class="z-20 mb-6 bg-slate-800 border border-slate-700 px-8 py-3 rounded-2xl shadow-xl text-center max-w-4xl w-full">
+            <span class="text-xs text-amber-400 font-extrabold uppercase tracking-widest block mb-1">Frase Selezionata</span>
+            <h2 id="full-sentence-display" class="latin-font text-2xl md:text-4xl font-bold text-white tracking-wide">
+                <!-- Loaded dynamically -->
+            </h2>
+        </div>
+
+        <!-- LATIN SENTENCE DISPLAY / INTERACTIVE CONTAINER WITH WORD-BY-WORD TRANSLATION SLOTS -->
+        <div id="sentence-container" class="z-20 flex flex-wrap justify-center items-start gap-4 md:gap-6 max-w-6xl p-6 md:p-8 bg-slate-800/80 rounded-3xl border-2 border-slate-700 shadow-2xl backdrop-blur-sm min-h-[160px] mb-8">
+            <!-- Word Cards & Word Translation Slots generated dynamically -->
+        </div>
+
+        <!-- SECTION: SLOT-BASED ITALIAN SYNTAX REORDERING -->
+        <div id="syntax-reordering-section" class="hidden z-20 w-full max-w-5xl bg-slate-800/90 border border-slate-700 rounded-3xl p-6 shadow-xl mb-6">
+            <h3 class="text-sm font-extrabold uppercase text-amber-400 tracking-wider mb-2 flex items-center gap-2">
+                <span>🔄</span> Riordino Sintattico (Sintassi Italiana):
+            </h3>
+            <p class="text-xs text-slate-400 mb-4">Tocca una parola nel banco in basso per inserire la prima disponibile nello slot vuoto, o tocca uno slot compilato per rimuoverla.</p>
+            
+            <!-- Target Slots -->
+            <div id="target-slots" class="flex flex-wrap items-center gap-3 bg-slate-900/60 p-4 rounded-2xl border border-slate-700 min-h-[85px] mb-4">
+                <!-- Target slots populated dynamically -->
+            </div>
+
+            <!-- Word Pool Bank -->
+            <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-slate-400 uppercase">Banco Parole:</span>
+                <button onclick="resetSyntaxSlots()" class="text-xs text-rose-400 hover:text-rose-300 font-bold underline">Reimposta Slot</button>
+            </div>
+            <div id="word-pool" class="flex flex-wrap gap-2.5 mt-2">
+                <!-- Word pool items populated dynamically -->
+            </div>
+        </div>
+
+        <!-- Mode Indicator Badge -->
+        <div id="mode-badge" class="z-20 mt-2 px-4 py-1.5 rounded-xl text-xs font-bold uppercase tracking-widest bg-slate-800 border border-slate-700 text-slate-400 shadow">
+            Modalità Attiva: Evidenziatore (Tocca una parola per colorare o analizzare)
+        </div>
+
+    </main>
+
+    <!-- MORPHOLOGY SELECTION MODAL (WITH SHUFFLED OPTIONS) -->
+    <div id="morpho-modal" class="hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-slate-800 border-2 border-slate-600 rounded-3xl p-6 max-w-lg w-full shadow-2xl space-y-4">
+            <div class="flex justify-between items-center border-b border-slate-700 pb-3">
+                <h3 class="text-xl font-bold text-amber-400 flex items-center gap-2">
+                    <span>🔍</span> Analisi Morfologica: <span id="modal-word-text" class="latin-font text-white underline"></span>
+                </h3>
+                <button onclick="closeMorphoModal()" class="text-slate-400 hover:text-white font-bold text-xl px-2">✕</button>
+            </div>
+            <p class="text-sm text-slate-300">Scegli la classificazione grammaticale/morfologica corretta:</p>
+            <div id="morpho-options" class="space-y-3">
+                <!-- Shuffled options populated dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <!-- INTERACTIVE TOOLBAR / PALETTE (BOTTOM STICKY) -->
+    <footer class="bg-slate-800 border-t border-slate-700 p-4 shadow-2xl z-30">
+        <div class="max-w-7xl mx-auto flex flex-col lg:flex-row items-center justify-between gap-4">
+            
+            <!-- Color Highlighting Tools -->
+            <div class="flex flex-wrap items-center justify-center gap-2 md:gap-3 w-full lg:w-auto">
+                
+                <!-- Red: Soggetto -->
+                <button onclick="selectTool('soggetto')" id="tool-soggetto" class="color-tool px-4 py-3 rounded-2xl font-bold text-xs md:text-sm flex items-center space-x-2 bg-red-500/20 text-red-300 border-2 border-red-500 hover:bg-red-500/30 transition-all shadow-md">
+                    <span class="w-4 h-4 rounded-full bg-red-500 inline-block shadow"></span>
+                    <span>Soggetto (Nom)</span>
+                </button>
+
+                <!-- Orange: Predicato -->
+                <button onclick="selectTool('predicato')" id="tool-predicato" class="color-tool px-4 py-3 rounded-2xl font-bold text-xs md:text-sm flex items-center space-x-2 bg-amber-500/20 text-amber-300 border-2 border-amber-500 hover:bg-amber-500/30 transition-all shadow-md">
+                    <span class="w-4 h-4 rounded-full bg-amber-500 inline-block shadow"></span>
+                    <span>Predicato (Verb/Nom)</span>
+                </button>
+
+                <!-- Green: Oggetto -->
+                <button onclick="selectTool('oggetto')" id="tool-oggetto" class="color-tool px-4 py-3 rounded-2xl font-bold text-xs md:text-sm flex items-center space-x-2 bg-emerald-500/20 text-emerald-300 border-2 border-emerald-500 hover:bg-emerald-500/30 transition-all shadow-md">
+                    <span class="w-4 h-4 rounded-full bg-emerald-500 inline-block shadow"></span>
+                    <span>Compl. Oggetto (Acc)</span>
+                </button>
+
+                <!-- Blue: Obliquo / Preposizionale -->
+                <button onclick="selectTool('obliquo')" id="tool-obliquo" class="color-tool px-4 py-3 rounded-2xl font-bold text-xs md:text-sm flex items-center space-x-2 bg-sky-500/20 text-sky-300 border-2 border-sky-500 hover:bg-sky-500/30 transition-all shadow-md">
+                    <span class="w-4 h-4 rounded-full bg-sky-400 inline-block shadow"></span>
+                    <span>Compl. Obliquo / Luogo</span>
+                </button>
+
+                <!-- Purple: Specificazione / Attributo -->
+                <button onclick="selectTool('attributo')" id="tool-attributo" class="color-tool px-4 py-3 rounded-2xl font-bold text-xs md:text-sm flex items-center space-x-2 bg-purple-500/20 text-purple-300 border-2 border-purple-500 hover:bg-purple-500/30 transition-all shadow-md">
+                    <span class="w-4 h-4 rounded-full bg-purple-400 inline-block shadow"></span>
+                    <span>Attr. / Genitivo</span>
+                </button>
+
+                <!-- Eraser -->
+                <button onclick="selectTool('eraser')" id="tool-eraser" class="color-tool px-4 py-3 rounded-2xl font-bold text-xs md:text-sm flex items-center space-x-2 bg-slate-700 text-slate-300 border-2 border-slate-500 hover:bg-slate-600 transition-all shadow-md">
+                    <span>🧹 Gomma</span>
+                </button>
+            </div>
+
+            <!-- Action Tools -->
+            <div class="flex items-center justify-center gap-2 md:gap-3 w-full lg:w-auto border-t lg:border-t-0 border-slate-700 pt-3 lg:pt-0">
+                
+                <!-- Toggle Connection Mode -->
+                <button onclick="selectTool('connect')" id="tool-connect" class="px-4 py-3 rounded-2xl font-bold text-xs md:text-sm bg-indigo-600 hover:bg-indigo-500 text-white border-2 border-indigo-400 transition-all shadow-lg flex items-center space-x-1.5">
+                    <span>🏹 Collega (Frecce)</span>
+                </button>
+
+                <!-- Clear Connections -->
+                <button onclick="clearConnections()" class="px-3 py-3 rounded-2xl font-bold text-xs md:text-sm bg-slate-700 hover:bg-slate-600 text-slate-300 border border-slate-600 transition-all shadow">
+                    🗑️ Cancella Frecce
+                </button>
+
+                <!-- Reset Button -->
+                <button onclick="resetCurrentSentence()" class="px-3 py-3 rounded-2xl font-bold text-xs md:text-sm bg-rose-700 hover:bg-rose-600 text-white border border-rose-500 transition-all shadow">
+                    🔄 Azzera
+                </button>
+
+            </div>
+
+        </div>
+    </footer>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // DATASET: Strictly 1st Declension, Sum + Present Ind. 4 Conjugations, 1st Class Fem. Adjectives
+        const dataset = {
+            1: [
+                {
+                    latin: "Puella sedula parvam rosam colit.",
+                    italianOrder: ["La", "fanciulla", "diligente", "coltiva", "una", "piccola", "rosa."],
+                    words: [
+                        { 
+                            text: "Puella", 
+                            role: "soggetto",
+                            translations: [
+                                { label: "La fanciulla", correct: true },
+                                { label: "La puella", correct: false },
+                                { label: "La madre", correct: false }
+                            ],
+                            options: [
+                                { label: "Sostantivo femm. sing. - Nominativo", correct: true },
+                                { label: "Sostantivo femm. plur. - Accusativo", correct: false },
+                                { label: "Aggettivo femm. sing. - Ablativo", correct: false }
+                            ]
+                        },
+                        { 
+                            text: "sedula", 
+                            role: "attributo",
+                            translations: [
+                                { label: "diligente", correct: true },
+                                { label: "seduta", correct: false },
+                                { label: "pigra", correct: false }
+                            ],
+                            options: [
+                                { label: "Aggettivo 1ª cl. femm. sing. - Nominativo", correct: true },
+                                { label: "Sostantivo femm. sing. - Genitivo", correct: false },
+                                { label: "Verbo 3ª pers. sing. - Presente", correct: false }
+                            ]
+                        },
+                        { 
+                            text: "parvam", 
+                            role: "attributo",
+                            translations: [
+                                { label: "piccola", correct: true },
+                                { label: "grande", correct: false },
+                                { label: "parca", correct: false }
+                            ],
+                            options: [
+                                { label: "Aggettivo 1ª cl. femm. sing. - Accusativo", correct: true },
+                                { label: "Sostantivo femm. plur. - Genitivo", correct: false },
+                                { label: "Aggettivo 1ª cl. femm. sing. - Nominativo", correct: false }
+                            ]
+                        },
+                        { 
+                            text: "rosam", 
+                            role: "oggetto",
+                            translations: [
+                                { label: "la rosa", correct: true },
+                                { label: "la spina", correct: false },
+                                { label: "il roseto", correct: false }
+                            ],
+                            options: [
+                                { label: "Sostantivo femm. sing. - Accusativo", correct: true },
+                                { label: "Sostantivo femm. sing. - Nominativo", correct: false },
+                                { label: "Sostantivo femm. plur. - Accusativo", correct: false }
+                            ]
+                        },
+                        { 
+                            text: "colit.", 
+                            role: "predicato",
+                            translations: [
+                                { label: "coltiva", correct: true },
+                                { label: "coglie", correct: false },
+                                { label: "colora", correct: false }
+                            ],
+                            options: [
+                                { label: "Verbo (colere, 3ª con.) - 3ª pers. sing. Pres.", correct: true },
+                                { label: "Sostantivo femm. sing. - Dativo", correct: false },
+                                { label: "Verbo (colere) - 3ª pers. plur. Pres.", correct: false }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    latin: "Magna aqua terram rigat.",
+                    italianOrder: ["La", "grande", "acqua", "bagna", "la", "terra."],
+                    words: [
+                        { 
+                            text: "Magna", 
+                            role: "attributo",
+                            translations: [
+                                { label: "La grande", correct: true },
+                                { label: "La molta", correct: false },
+                                { label: "La piccola", correct: false }
+                            ],
+                            options: [
+                                { label: "Aggettivo 1ª cl. femm. sing. - Nominativo", correct: true },
+                                { label: "Aggettivo 1ª cl. femm. sing. - Accusativo", correct: false },
+                                { label: "Sostantivo femm. plur. - Nominativo", correct: false }
+                            ]
+                        },
+                        { 
+                            text: "aqua", 
+                            role: "soggetto",
+                            translations: [
+                                { label: "acqua", correct: true },
+                                { label: "onda", correct: false },
+                                { label: "pioggia", correct: false }
+                            ],
+                            options: [
+                                { label: "Sostantivo femm. sing. - Nominativo", correct: true },
+                                { label: "Sostantivo femm. sing. - Ablativo", correct: false },
+                                { label: "Sostantivo femm. plur. - Accusativo", correct: false }
+                            ]
+                        },
+                        { 
+                            text: "terram", 
+                            role: "oggetto",
+                            translations: [
+                                { label: "la terra", correct: true },
+                                { label: "la pietra", correct: false },
+                                { label: "l'erba", correct: false }
+                            ],
+                            options: [
+                                { label: "Sostantivo femm. sing. - Accusativo", correct: true },
+                                { label: "Sostantivo femm. sing. - Genitivo", correct: false },
+                                { label: "Aggettivo femm. sing. - Accusativo", correct: false }
+                            ]
+                        },
+                        { 
+                            text: "rigat.", 
+                            role: "predicato",
+                            translations: [
+                                { label: "bagna", correct: true },
+                                { label: "asciuga", correct: false },
+                                { label: "rigenera", correct: false }
+                            ],
+                            options: [
+                                { label: "Verbo (rigare, 1ª con.) - 3ª pers. sing. Pres.", correct: true },
+                                { label: "Verbo (rigare) - 1ª pers. sing. Pres.", correct: false },
+                                { label: "Sostantivo femm. sing. - Nominativo", correct: false }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    latin: "Insula grata est.",
+                    italianOrder: ["L'", "isola", "è", "gradita."],
+                    words: [
+                        { 
+                            text: "Insula", 
+                            role: "soggetto",
+                            translations: [
+                                { label: "L'isola", correct: true },
+                                { label: "La penisola", correct: false },
+                                { label: "La baia", correct: false }
+                            ],
+                            options: [
+                                { label: "Sostantivo femm. sing. - Nominativo", correct: true },
+                                { label: "Sostantivo femm. plur. - Accusativo", correct: false },
+                                { label: "Aggettivo femm. sing. - Nominativo", correct: false }
+                            ]
+                        },
+                        { 
+                            text: "grata", 
+                            role: "predicato",
+                            translations: [
+                                { label: "gradita", correct: true },
+                                { label: "grande", correct: false },
+                                { label: "graziosa", correct: false }
+                            ],
+                            options: [
+                                { label: "Aggettivo 1ª cl. femm. sing. (Nome del Pred.)", correct: true },
+                                { label: "Sostantivo femm. sing. - Ablativo", correct: false },
+                                { label: "Aggettivo femm. sing. - Accusativo", correct: false }
+                            ]
+                        },
+                        { 
+                            text: "est.", 
+                            role: "predicato",
+                            translations: [
+                                { label: "è", correct: true },
+                                { label: "sta", correct: false },
+                                { label: "ha", correct: false }
+                            ],
+                            options: [
+                                { label: "Verbo sum - 3ª pers. sing. Pres. Ind. (Copula)", correct: true },
+                                { label: "Verbo sum - 3ª pers. plur. Pres.", correct: false },
+                                { label: "Preposizione di luogo", correct: false }
+                            ]
+                        }
+                    ]
+                }
+            ],
+            2: [
+                {
+                    latin: "Fida ancilla in casa laborat.",
+                    italianOrder: ["La", "fedele", "ancella", "lavora", "nella", "casa."],
+                    words: [
+                        { 
+                            text: "Fida", 
+                            role: "attributo",
+                            translations: [
+                                { label: "La fedele", correct: true },
+                                { label: "La fidata", correct: false },
+                                { label: "La forte", correct: false }
+                            ],
+                            options: [
+                                { label: "Aggettivo 1ª cl. femm. sing. - Nominativo", correct: true },
+                                { label: "Sostantivo femm. sing. - Ablativo", correct: false },
+                                { label: "Aggettivo femm. sing. - Accusativo", correct: false }
+                            ]
+                        },
+                        { 
+                            text: "ancilla", 
+                            role: "soggetto",
+                            translations: [
+                                { label: "ancella", correct: true },
+                                { label: "padrona", correct: false },
+                                { label: "ragazza", correct: false }
+                            ],
+                            options: [
+                                { label: "Sostantivo femm. sing. - Nominativo", correct: true },
+                                { label: "Sostantivo femm. plur. - Nominativo", correct: false },
+                                { label: "Sostantivo femm. sing. - Accusativo", correct: false }
+                            ]
+                        },
+                        { 
+                            text: "in", 
+                            role: "obliquo",
+                            translations: [
+                                { label: "in / nella", correct: true },
+                                { label: "da", correct: false },
+                                { label: "verso", correct: false }
+                            ],
+                            options: [
+                                { label: "Preposizione (reggente Ablativo)", correct: true },
+                                { label: "Preposizione (reggente Genitivo)", correct: false },
+                                { label: "Congiunzione coordinante", correct: false }
+                            ]
+                        },
+                        { 
+                            text: "casa", 
+                            role: "obliquo",
+                            translations: [
+                                { label: "casa / capanna", correct: true },
+                                { label: "città", correct: false },
+                                { label: "strada", correct: false }
+                            ],
+                            options: [
+                                { label: "Sostantivo femm. sing. - Ablativo (Stato in luogo)", correct: true },
+                                { label: "Sostantivo femm. sing. - Nominativo", correct: false },
+                                { label: "Sostantivo femm. plur. - Accusativo", correct: false }
+                            ]
+                        },
+                        { 
+                            text: "laborat.", 
+                            role: "predicato",
+                            translations: [
+                                { label: "lavora", correct: true },
+                                { label: "riposa", correct: false },
+                                { label: "canta", correct: false }
+                            ],
+                            options: [
+                                { label: "Verbo (laborare, 1ª con.) - 3ª pers. sing. Pres.", correct: true },
+                                { label: "Verbo - 3ª pers. plur. Pres.", correct: false },
+                                { label: "Sostantivo femm. sing. - Ablativo", correct: false }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    latin: "Pirata peritam nautam parva sagitta vulnerat.",
+                    italianOrder: ["Il", "pirata", "ferisce", "la", "donna", "marinaio", "esperta", "con", "una", "piccola", "freccia."],
+                    words: [
+                        { 
+                            text: "Pirata", 
+                            role: "soggetto",
+                            translations: [
+                                { label: "Il pirata", correct: true },
+                                { label: "Il marinaio", correct: false },
+                                { label: "Il soldato", correct: false }
+                            ],
+                            options: [
+                                { label: "Sostantivo maschile 1ª decl. - Nominativo sing.", correct: true },
+                                { label: "Sostantivo femm. - Accusativo sing.", correct: false },
+                                { label: "Aggettivo femm. - Ablativo sing.", correct: false }
+                            ]
+                        },
+                        { 
+                            text: "peritam", 
+                            role: "attributo",
+                            translations: [
+                                { label: "esperta", correct: true },
+                                { label: "pericolosa", correct: false },
+                                { label: "perduta", correct: false }
+                            ],
+                            options: [
+                                { label: "Aggettivo 1ª cl. femm. sing. - Accusativo", correct: true },
+                                { label: "Aggettivo 1ª cl. femm. sing. - Nominativo", correct: false },
+                                { label: "Sostantivo femm. sing. - Accusativo", correct: false }
+                            ]
+                        },
+                        { 
+                            text: "nautam", 
+                            role: "oggetto",
+                            translations: [
+                                { label: "la donna marinaio", correct: true },
+                                { label: "la nave", correct: false },
+                                { label: "la vela", correct: false }
+                            ],
+                            options: [
+                                { label: "Sostantivo maschile 1ª decl. - Accusativo sing.", correct: true },
+                                { label: "Sostantivo femm. - Genitivo plur.", correct: false },
+                                { label: "Sostantivo femm. - Nominativo sing.", correct: false }
+                            ]
+                        },
+                        { 
+                            text: "parva", 
+                            role: "attributo",
+                            translations: [
+                                { label: "con una piccola", correct: true },
+                                { label: "con una grande", correct: false },
+                                { label: "con la prima", correct: false }
+                            ],
+                            options: [
+                                { label: "Aggettivo 1ª cl. femm. sing. - Ablativo", correct: true },
+                                { label: "Aggettivo 1ª cl. femm. sing. - Accusativo", correct: false },
+                                { label: "Sostantivo femm. sing. - Genitivo", correct: false }
+                            ]
+                        },
+                        { 
+                            text: "sagitta", 
+                            role: "obliquo",
+                            translations: [
+                                { label: "freccia", correct: true },
+                                { label: "spada", correct: false },
+                                { label: "lancia", correct: false }
+                            ],
+                            options: [
+                                { label: "Sostantivo femm. sing. - Ablativo (Mezzo)", correct: true },
+                                { label: "Sostantivo femm. sing. - Nominativo", correct: false },
+                                { label: "Sostantivo femm. plur. - Accusativo", correct: false }
+                            ]
+                        },
+                        { 
+                            text: "vulnerat.", 
+                            role: "predicato",
+                            translations: [
+                                { label: "ferisce", correct: true },
+                                { label: "uccide", correct: false },
+                                { label: "colpisce", correct: false }
+                            ],
+                            options: [
+                                { label: "Verbo (vulnerare, 1ª con.) - 3ª pers. sing. Pres.", correct: true },
+                                { label: "Verbo - 2ª pers. sing. Pres.", correct: false },
+                                { label: "Aggettivo femm. sing. - Ablativo", correct: false }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    latin: "Strenua matrona magna cura parvam filiam educat.",
+                    italianOrder: ["L'", "energica", "matrona", "educa", "la", "piccola", "figlia", "con", "grande", "cura."],
+                    words: [
+                        { 
+                            text: "Strenua", 
+                            role: "attributo",
+                            translations: [
+                                { label: "L'energica", correct: true },
+                                { label: "La severa", correct: false },
+                                { label: "La stanca", correct: false }
+                            ],
+                            options: [
+                                { label: "Aggettivo 1ª cl. femm. sing. - Nominativo", correct: true },
+                                { label: "Sostantivo femm. sing. - Accusativo", correct: false },
+                                { label: "Aggettivo femm. sing. - Genitivo", correct: false }
+                            ]
+                        },
+                        { 
+                            text: "matrona", 
+                            role: "soggetto",
+                            translations: [
+                                { label: "matrona", correct: true },
+                                { label: "madre", correct: false },
+                                { label: "fanciulla", correct: false }
+                            ],
+                            options: [
+                                { label: "Sostantivo femm. sing. - Nominativo", correct: true },
+                                { label: "Sostantivo femm. sing. - Accusativo", correct: false },
+                                { label: "Sostantivo femm. plur. - Accusativo", correct: false }
+                            ]
+                        },
+                        { 
+                            text: "magna", 
+                            role: "attributo",
+                            translations: [
+                                { label: "con grande", correct: true },
+                                { label: "con molta", correct: false },
+                                { label: "con poca", correct: false }
+                            ],
+                            options: [
+                                { label: "Aggettivo 1ª cl. femm. sing. - Ablativo", correct: true },
+                                { label: "Aggettivo 1ª cl. femm. sing. - Nominativo", correct: false },
+                                { label: "Sostantivo femm. sing. - Genitivo", correct: false }
+                            ]
+                        },
+                        { 
+                            text: "cura", 
+                            role: "obliquo",
+                            translations: [
+                                { label: "cura", correct: true },
+                                { label: "gioia", correct: false },
+                                { label: "pazienza", correct: false }
+                            ],
+                            options: [
+                                { label: "Sostantivo femm. sing. - Ablativo (Modo)", correct: true },
+                                { label: "Verbo (curare) - Imperativo", correct: false },
+                                { label: "Sostantivo femm. sing. - Accusativo", correct: false }
+                            ]
+                        },
+                        { 
+                            text: "parvam", 
+                            role: "attributo",
+                            translations: [
+                                { label: "la piccola", correct: true },
+                                { label: "la cara", correct: false },
+                                { label: "la giovane", correct: false }
+                            ],
+                            options: [
+                                { label: "Aggettivo 1ª cl. femm. sing. - Accusativo", correct: true },
+                                { label: "Aggettivo femm. sing. - Nominativo", correct: false },
+                                { label: "Sostantivo femm. sing. - Ablativo", correct: false }
+                            ]
+                        },
+                        { 
+                            text: "filiam", 
+                            role: "oggetto",
+                            translations: [
+                                { label: "figlia", correct: true },
+                                { label: "fanciulla", correct: false },
+                                { label: "sorella", correct: false }
+                            ],
+                            options: [
+                                { label: "Sostantivo femm. sing. - Accusativo", correct: true },
+                                { label: "Sostantivo femm. sing. - Genitivo", correct: false },
+                                { label: "Sostantivo femm. plur. - Accusativo", correct: false }
+                            ]
+                        },
+                        { 
+                            text: "educat.", 
+                            role: "predicato",
+                            translations: [
+                                { label: "educa", correct: true },
+                                { label: "ama", correct: false },
+                                { label: "insegna", correct: false }
+                            ],
+                            options: [
+                                { label: "Verbo (educare, 1ª con.) - 3ª pers. sing. Pres.", correct: true },
+                                { label: "Verbo - 3ª pers. plur. Pres.", correct: false },
+                                { label: "Sostantivo femm. sing. - Ablativo", correct: false }
+                            ]
+                        }
+                    ]
+                }
+            ],
+            3: [
+                {
+                    latin: "In silva alta parva agna errat.",
+                    italianOrder: ["Nell'", "alta", "selva", "vaga", "una", "piccola", "agnella."],
+                    words: [
+                        { 
+                            text: "In", 
+                            role: "obliquo",
+                            translations: [
+                                { label: "Nell'", correct: true },
+                                { label: "Dall'", correct: false },
+                                { label: "Sull'", correct: false }
+                            ],
+                            options: [
+                                { label: "Preposizione (reggente Ablativo)", correct: true },
+                                { label: "Preposizione (reggente Genitivo)", correct: false },
+                                { label: "Congiunzione", correct: false }
+                            ]
+                        },
+                        { 
+                            text: "silva", 
+                            role: "obliquo",
+                            translations: [
+                                { label: "selva", correct: true },
+                                { label: "grotta", correct: false },
+                                { label: "montagna", correct: false }
+                            ],
+                            options: [
+                                { label: "Sostantivo femm. sing. - Ablativo (Stato in luogo)", correct: true },
+                                { label: "Sostantivo femm. sing. - Nominativo", correct: false },
+                                { label: "Sostantivo femm. plur. - Accusativo", correct: false }
+                            ]
+                        },
+                        { 
+                            text: "alta", 
+                            role: "attributo",
+                            translations: [
+                                { label: "alta", correct: true },
+                                { label: "fitta", correct: false },
+                                { label: "oscura", correct: false }
+                            ],
+                            options: [
+                                { label: "Aggettivo 1ª cl. femm. sing. - Ablativo", correct: true },
+                                { label: "Aggettivo femm. sing. - Accusativo", correct: false },
+                                { label: "Sostantivo femm. sing. - Nominativo", correct: false }
+                            ]
+                        },
+                        { 
+                            text: "parva", 
+                            role: "attributo",
+                            translations: [
+                                { label: "una piccola", correct: true },
+                                { label: "una dolce", correct: false },
+                                { label: "una timida", correct: false }
+                            ],
+                            options: [
+                                { label: "Aggettivo 1ª cl. femm. sing. - Nominativo", correct: true },
+                                { label: "Aggettivo femm. sing. - Accusativo", correct: false },
+                                { label: "Sostantivo femm. sing. - Ablativo", correct: false }
+                            ]
+                        },
+                        { 
+                            text: "agna", 
+                            role: "soggetto",
+                            translations: [
+                                { label: "agnella", correct: true },
+                                { label: "capretta", correct: false },
+                                { label: "cerva", correct: false }
+                            ],
+                            options: [
+                                { label: "Sostantivo femm. sing. - Nominativo", correct: true },
+                                { label: "Sostantivo femm. sing. - Accusativo", correct: false },
+                                { label: "Sostantivo femm. plur. - Accusativo", correct: false }
+                            ]
+                        },
+                        { 
+                            text: "errat.", 
+                            role: "predicato",
+                            translations: [
+                                { label: "vaga", correct: true },
+                                { label: "scappa", correct: false },
+                                { label: "sbaglia", correct: false }
+                            ],
+                            options: [
+                                { label: "Verbo (errare, 1ª con.) - 3ª pers. sing. Pres.", correct: true },
+                                { label: "Verbo - 3ª pers. plur. Pres.", correct: false },
+                                { label: "Aggettivo femm. sing. - Ablativo", correct: false }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    latin: "Ira saeva reginae timidam puellam perterret.",
+                    italianOrder: ["L'", "ira", "cruenta", "della", "regina", "atterrisce", "la", "fanciulla", "timida."],
+                    words: [
+                        { 
+                            text: "Ira", 
+                            role: "soggetto",
+                            translations: [
+                                { label: "L'ira", correct: true },
+                                { label: "La forza", correct: false },
+                                { label: "La superbia", correct: false }
+                            ],
+                            options: [
+                                { label: "Sostantivo femm. sing. - Nominativo", correct: true },
+                                { label: "Sostantivo femm. sing. - Ablativo", correct: false },
+                                { label: "Sostantivo femm. plur. - Accusativo", correct: false }
+                            ]
+                        },
+                        { 
+                            text: "saeva", 
+                            role: "attributo",
+                            translations: [
+                                { label: "cruenta", correct: true },
+                                { label: "cieca", correct: false },
+                                { label: "terribile", correct: false }
+                            ],
+                            options: [
+                                { label: "Aggettivo 1ª cl. femm. sing. - Nominativo", correct: true },
+                                { label: "Aggettivo femm. sing. - Accusativo", correct: false },
+                                { label: "Sostantivo femm. sing. - Genitivo", correct: false }
+                            ]
+                        },
+                        { 
+                            text: "reginae", 
+                            role: "attributo",
+                            translations: [
+                                { label: "della regina", correct: true },
+                                { label: "della padrona", correct: false },
+                                { label: "della dea", correct: false }
+                            ],
+                            options: [
+                                { label: "Sostantivo femm. sing. - Genitivo (Specificazione)", correct: true },
+                                { label: "Sostantivo femm. plur. - Nominativo", correct: false },
+                                { label: "Sostantivo femm. sing. - Accusativo", correct: false }
+                            ]
+                        },
+                        { 
+                            text: "timidam", 
+                            role: "attributo",
+                            translations: [
+                                { label: "timida", correct: true },
+                                { label: "piccola", correct: false },
+                                { label: "triste", correct: false }
+                            ],
+                            options: [
+                                { label: "Aggettivo 1ª cl. femm. sing. - Accusativo", correct: true },
+                                { label: "Aggettivo femm. sing. - Nominativo", correct: false },
+                                { label: "Sostantivo femm. sing. - Genitivo", correct: false }
+                            ]
+                        },
+                        { 
+                            text: "puellam", 
+                            role: "oggetto",
+                            translations: [
+                                { label: "la fanciulla", correct: true },
+                                { label: "la serva", correct: false },
+                                { label: "la regina", correct: false }
+                            ],
+                            options: [
+                                { label: "Sostantivo femm. sing. - Accusativo", correct: true },
+                                { label: "Sostantivo femm. sing. - Nominativo", correct: false },
+                                { label: "Sostantivo femm. plur. - Accusativo", correct: false }
+                            ]
+                        },
+                        { 
+                            text: "perterret.", 
+                            role: "predicato",
+                            translations: [
+                                { label: "atterrisce", correct: true },
+                                { label: "insegue", correct: false },
+                                { label: "minaccia", correct: false }
+                            ],
+                            options: [
+                                { label: "Verbo (perterrēre, 2ª con.) - 3ª pers. sing. Pres.", correct: true },
+                                { label: "Verbo - 3ª pers. plur. Pres.", correct: false },
+                                { label: "Sostantivo femm. sing. - Ablativo", correct: false }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    latin: "Formosa fabula poetae magnam laetitiam dat.",
+                    italianOrder: ["La", "bella", "favola", "della", "poetessa", "dà", "grande", "gioia."],
+                    words: [
+                        { 
+                            text: "Formosa", 
+                            role: "attributo",
+                            translations: [
+                                { label: "La bella", correct: true },
+                                { label: "La nuova", correct: false },
+                                { label: "La famosa", correct: false }
+                            ],
+                            options: [
+                                { label: "Aggettivo 1ª cl. femm. sing. - Nominativo", correct: true },
+                                { label: "Aggettivo femm. sing. - Accusativo", correct: false },
+                                { label: "Sostantivo femm. sing. - Ablativo", correct: false }
+                            ]
+                        },
+                        { 
+                            text: "fabula", 
+                            role: "soggetto",
+                            translations: [
+                                { label: "favola", correct: true },
+                                { label: "storia", correct: false },
+                                { label: "lettera", correct: false }
+                            ],
+                            options: [
+                                { label: "Sostantivo femm. sing. - Nominativo", correct: true },
+                                { label: "Sostantivo femm. sing. - Accusativo", correct: false },
+                                { label: "Sostantivo femm. plur. - Accusativo", correct: false }
+                            ]
+                        },
+                        { 
+                            text: "poetae", 
+                            role: "attributo",
+                            translations: [
+                                { label: "della poetessa", correct: true },
+                                { label: "della fanciulla", correct: false },
+                                { label: "della matrona", correct: false }
+                            ],
+                            options: [
+                                { label: "Sostantivo maschile 1ª decl. - Genitivo sing.", correct: true },
+                                { label: "Sostantivo femm. - Accusativo plur.", correct: false },
+                                { label: "Aggettivo femm. - Ablativo sing.", correct: false }
+                            ]
+                        },
+                        { 
+                            text: "magnam", 
+                            role: "attributo",
+                            translations: [
+                                { label: "grande", correct: true },
+                                { label: "molta", correct: false },
+                                { label: "immensa", correct: false }
+                            ],
+                            options: [
+                                { label: "Aggettivo 1ª cl. femm. sing. - Accusativo", correct: true },
+                                { label: "Aggettivo femm. sing. - Nominativo", correct: false },
+                                { label: "Sostantivo femm. sing. - Genitivo", correct: false }
+                            ]
+                        },
+                        { 
+                            text: "laetitiam", 
+                            role: "oggetto",
+                            translations: [
+                                { label: "gioia", correct: true },
+                                { label: "pace", correct: false },
+                                { label: "speranza", correct: false }
+                            ],
+                            options: [
+                                { label: "Sostantivo femm. sing. - Accusativo", correct: true },
+                                { label: "Sostantivo femm. sing. - Nominativo", correct: false },
+                                { label: "Sostantivo femm. plur. - Genitivo", correct: false }
+                            ]
+                        },
+                        { 
+                            text: "dat.", 
+                            role: "predicato",
+                            translations: [
+                                { label: "dà", correct: true },
+                                { label: "porta", correct: false },
+                                { label: "manda", correct: false }
+                            ],
+                            options: [
+                                { label: "Verbo (dare, 1ª con.) - 3ª pers. sing. Pres.", correct: true },
+                                { label: "Verbo - 3ª pers. plur. Pres.", correct: false },
+                                { label: "Preposizione di luogo", correct: false }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        };
+
+        // COLOR MAPPING CONFIGURATION
+        const colorStyles = {
+            soggetto: { bg: "bg-red-500/30", border: "border-red-500", text: "text-red-200" },
+            predicato: { bg: "bg-amber-500/30", border: "border-amber-500", text: "text-amber-200" },
+            oggetto: { bg: "bg-emerald-500/30", border: "border-emerald-500", text: "text-emerald-200" },
+            obliquo: { bg: "bg-sky-500/30", border: "border-sky-400", text: "text-sky-200" },
+            attributo: { bg: "bg-purple-500/30", border: "border-purple-400", text: "text-purple-200" }
+        };
+
+        // STATE VARIABLES
+        let currentLevel = 1;
+        let currentSentenceIdx = 0;
+        let selectedTool = 'soggetto'; 
+        let connectionFirstWordIdx = null; 
+        let userColorMap = {}; 
+        let userMorphoMap = {}; 
+        let userWordTransMap = {}; // User's selected single-word translations
+        let userConnections = []; 
+        let activeModalWordIdx = null;
+        
+        // SYNTAX REORDERING STATE
+        let syntaxSlots = []; 
+        let syntaxPool = []; 
+
+        window.onload = function() {
+            setLevel(1);
+            window.addEventListener('resize', redrawCanvas);
+            window.addEventListener('scroll', redrawCanvas);
+        };
+
+        // LEVEL SWITCHER
+        function setLevel(lvl) {
+            currentLevel = lvl;
+            currentSentenceIdx = 0;
+
+            [1, 2, 3].forEach(i => {
+                const btn = document.getElementById(`lvl-btn-${i}`);
+                if (i === lvl) {
+                    btn.className = "px-4 py-2 rounded-xl font-bold text-sm md:text-base bg-amber-500 text-slate-900 shadow-lg scale-105 transition-all";
+                } else {
+                    btn.className = "px-4 py-2 rounded-xl font-bold text-sm md:text-base text-slate-400 hover:text-white hover:bg-slate-800 transition-all";
+                }
+            });
+
+            const select = document.getElementById('sentence-select');
+            select.innerHTML = '';
+            dataset[lvl].forEach((item, index) => {
+                const opt = document.createElement('option');
+                opt.value = index;
+                opt.textContent = `Frase ${index + 1}: ${item.latin}`;
+                select.appendChild(opt);
+            });
+
+            loadSentence(0);
+        }
+
+        // LOAD SENTENCE
+        function loadSentence(idx) {
+            currentSentenceIdx = idx;
+            document.getElementById('sentence-select').value = idx;
+            
+            userColorMap = {};
+            userMorphoMap = {};
+            userWordTransMap = {};
+            userConnections = [];
+            connectionFirstWordIdx = null;
+
+            const sentenceData = dataset[currentLevel][currentSentenceIdx];
+            document.getElementById('full-sentence-display').textContent = sentenceData.latin;
+
+            initSyntaxReordering();
+            renderSentence();
+            redrawCanvas();
+            evaluateProgress();
+        }
+
+        // INIT SYNTAX REORDERING
+        function initSyntaxReordering() {
+            const sentenceData = dataset[currentLevel][currentSentenceIdx];
+            syntaxSlots = new Array(sentenceData.italianOrder.length).fill(null);
+            syntaxPool = [...sentenceData.italianOrder].map((word, origIdx) => ({ word, origIdx }));
+            syntaxPool.sort(() => Math.random() - 0.5);
+            renderSyntaxReordering();
+        }
+
+        function renderSyntaxReordering() {
+            const slotsContainer = document.getElementById('target-slots');
+            const poolContainer = document.getElementById('word-pool');
+            slotsContainer.innerHTML = '';
+            poolContainer.innerHTML = '';
+
+            syntaxSlots.forEach((item, slotIdx) => {
+                const slot = document.createElement('div');
+                slot.className = "slot-box bg-slate-800 border-2 border-dashed border-slate-600 rounded-xl flex items-center justify-center p-3 text-sm font-semibold cursor-pointer hover:border-amber-400";
+                
+                if (item !== null) {
+                    slot.className = "slot-box bg-amber-500/20 border-2 border-amber-500 text-amber-300 rounded-xl flex items-center justify-center p-3 text-sm font-bold shadow cursor-pointer";
+                    slot.textContent = item.word;
+                    slot.onclick = () => returnWordToPool(slotIdx);
+                } else {
+                    slot.innerHTML = `<span class="text-slate-500 text-xs">Slot ${slotIdx + 1}</span>`;
+                    slot.onclick = () => placeWordInNextSlot(slotIdx);
+                }
+                slotsContainer.appendChild(slot);
+            });
+
+            syntaxPool.forEach((poolItem, poolIdx) => {
+                const pill = document.createElement('div');
+                pill.className = "bg-slate-700 hover:bg-amber-600 hover:text-slate-900 border border-slate-600 px-4 py-2.5 rounded-xl font-bold text-sm cursor-pointer shadow transition-all";
+                pill.textContent = poolItem.word;
+                pill.onclick = () => assignPoolItemToFirstEmptySlot(poolIdx);
+                poolContainer.appendChild(pill);
+            });
+        }
+
+        function assignPoolItemToFirstEmptySlot(poolIdx) {
+            const emptySlotIdx = syntaxSlots.findIndex(s => s === null);
+            if (emptySlotIdx === -1) return;
+
+            const item = syntaxPool.splice(poolIdx, 1)[0];
+            syntaxSlots[emptySlotIdx] = item;
+            renderSyntaxReordering();
+        }
+
+        function returnWordToPool(slotIdx) {
+            const item = syntaxSlots[slotIdx];
+            if (item === null) return;
+            syntaxSlots[slotIdx] = null;
+            syntaxPool.push(item);
+            renderSyntaxReordering();
+        }
+
+        function resetSyntaxSlots() {
+            initSyntaxReordering();
+        }
+
+        // RENDER LATIN WORDS WITH INDIVIDUAL WORD TRANSLATION SLOTS BELOW
+        function renderSentence() {
+            const container = document.getElementById('sentence-container');
+            container.innerHTML = '';
+
+            const sentenceData = dataset[currentLevel][currentSentenceIdx];
+
+            sentenceData.words.forEach((wordObj, wordIdx) => {
+                // Wrapper column for word card + word translation slot
+                const col = document.createElement('div');
+                col.className = "flex flex-col items-center gap-2";
+
+                // WORD CARD
+                const card = document.createElement('div');
+                card.id = `word-card-${wordIdx}`;
+                card.onclick = () => handleWordClick(wordIdx);
+
+                let activeRole = userColorMap[wordIdx];
+                let colorClasses = "bg-slate-800/90 border-2 border-slate-600 text-slate-100 hover:border-amber-400";
+                let badgeHTML = '';
+
+                if (activeRole && colorStyles[activeRole]) {
+                    const style = colorStyles[activeRole];
+                    colorClasses = `${style.bg} border-2 ${style.border} ${style.text} shadow-lg scale-105`;
+                }
+
+                if (userMorphoMap[wordIdx]) {
+                    badgeHTML = `<span class="text-[10px] uppercase font-bold px-2 py-0.5 rounded-full bg-slate-900/90 text-amber-300 border border-amber-500/40 mt-1 block text-center max-w-[140px] truncate">${userMorphoMap[wordIdx]}</span>`;
+                }
+
+                if (selectedTool === 'connect' && connectionFirstWordIdx === wordIdx) {
+                    colorClasses += " ring-4 ring-indigo-400 ring-offset-2 ring-offset-slate-900 animate-pulse";
+                }
+
+                card.className = `word-card p-3 md:p-4 rounded-2xl flex flex-col items-center justify-center min-w-[95px] md:min-w-[115px] ${colorClasses}`;
+
+                card.innerHTML = `
+                    <span class="latin-font text-xl md:text-3xl font-bold tracking-wide">${wordObj.text}</span>
+                    ${badgeHTML}
+                `;
+
+                // SINGLE-WORD TRANSLATION SLOT (3 ALTERNATIVES)
+                const transSlot = document.createElement('div');
+                transSlot.className = "w-full max-w-[130px] bg-slate-900/90 border border-slate-700 rounded-xl p-1.5 shadow-inner flex flex-col items-center";
+
+                const transSelect = document.createElement('select');
+                transSelect.className = "w-full bg-slate-800 text-amber-300 font-semibold text-xs border border-slate-600 rounded-lg p-1 text-center cursor-pointer focus:outline-none focus:ring-1 focus:ring-amber-400";
+
+                const defaultOpt = document.createElement('option');
+                defaultOpt.value = "";
+                defaultOpt.textContent = " Traduci... ";
+                transSelect.appendChild(defaultOpt);
+
+                // Prepare 3 word translation choices (shuffled)
+                let wordTransOptions = [...wordObj.translations];
+                if (!wordObj._shuffledTrans) {
+                    wordObj._shuffledTrans = [...wordTransOptions].sort(() => Math.random() - 0.5);
+                }
+
+                wordObj._shuffledTrans.forEach(tOpt => {
+                    const opt = document.createElement('option');
+                    opt.value = tOpt.label;
+                    opt.textContent = tOpt.label;
+                    if (userWordTransMap[wordIdx] === tOpt.label) {
+                        opt.selected = true;
+                    }
+                    transSelect.appendChild(opt);
+                });
+
+                transSelect.onchange = (e) => {
+                    const selectedVal = e.target.value;
+                    userWordTransMap[wordIdx] = selectedVal;
+                    const choice = wordObj.translations.find(t => t.label === selectedVal);
+                    if (choice && choice.correct) {
+                        transSlot.className = "w-full max-w-[130px] bg-emerald-950/80 border-2 border-emerald-500 rounded-xl p-1.5 shadow flex flex-col items-center";
+                    } else if (choice) {
+                        transSlot.className = "w-full max-w-[130px] bg-rose-950/80 border-2 border-rose-500 rounded-xl p-1.5 shadow flex flex-col items-center";
+                    } else {
+                        transSlot.className = "w-full max-w-[130px] bg-slate-900/90 border border-slate-700 rounded-xl p-1.5 shadow-inner flex flex-col items-center";
+                    }
+                    evaluateProgress();
+                };
+
+                // Maintain feedback state if previously selected
+                if (userWordTransMap[wordIdx]) {
+                    const choice = wordObj.translations.find(t => t.label === userWordTransMap[wordIdx]);
+                    if (choice && choice.correct) {
+                        transSlot.className = "w-full max-w-[130px] bg-emerald-950/80 border-2 border-emerald-500 rounded-xl p-1.5 shadow flex flex-col items-center";
+                    } else if (choice) {
+                        transSlot.className = "w-full max-w-[130px] bg-rose-950/80 border-2 border-rose-500 rounded-xl p-1.5 shadow flex flex-col items-center";
+                    }
+                }
+
+                transSlot.appendChild(transSelect);
+
+                col.appendChild(card);
+                col.appendChild(transSlot);
+
+                container.appendChild(col);
+            });
+
+            setTimeout(redrawCanvas, 50);
+        }
+
+        // TOOL SELECTION HANDLER
+        function selectTool(toolName) {
+            selectedTool = toolName;
+            connectionFirstWordIdx = null;
+
+            const badge = document.getElementById('mode-badge');
+            if (toolName === 'connect') {
+                badge.textContent = "Modalità Attiva: Collega Parole (Tocca due parole per tracciare una freccia)";
+                badge.className = "z-20 mt-2 px-4 py-1.5 rounded-xl text-xs font-bold uppercase tracking-widest bg-indigo-900/80 border border-indigo-500 text-indigo-300 shadow animate-pulse";
+            } else if (toolName === 'eraser') {
+                badge.textContent = "Modalità Attiva: Gomma (Tocca una parola per rimuovere colore e analisi)";
+                badge.className = "z-20 mt-2 px-4 py-1.5 rounded-xl text-xs font-bold uppercase tracking-widest bg-slate-800 border border-slate-600 text-slate-300 shadow";
+            } else {
+                badge.textContent = `Modalità Attiva: Evidenziatore [${toolName.toUpperCase()}] (Tocca per colorare e aprire l'analisi morfologica)`;
+                badge.className = "z-20 mt-2 px-4 py-1.5 rounded-xl text-xs font-bold uppercase tracking-widest bg-slate-800 border border-slate-700 text-amber-400 shadow";
+            }
+
+            document.querySelectorAll('.color-tool').forEach(btn => btn.classList.remove('ring-4', 'ring-white', 'scale-105'));
+            const connectBtn = document.getElementById('tool-connect');
+            connectBtn.classList.remove('ring-4', 'ring-white', 'scale-105');
+
+            if (toolName === 'connect') {
+                connectBtn.classList.add('ring-4', 'ring-white', 'scale-105');
+            } else {
+                const activeBtn = document.getElementById(`tool-${toolName}`);
+                if (activeBtn) activeBtn.classList.add('ring-4', 'ring-white', 'scale-105');
+            }
+
+            renderSentence();
+        }
+
+        // HANDLE WORD CLICK
+        function handleWordClick(wordIdx) {
+            if (selectedTool === 'connect') {
+                if (connectionFirstWordIdx === null) {
+                    connectionFirstWordIdx = wordIdx;
+                    renderSentence();
+                } else if (connectionFirstWordIdx === wordIdx) {
+                    connectionFirstWordIdx = null;
+                    renderSentence();
+                } else {
+                    userConnections.push([connectionFirstWordIdx, wordIdx]);
+                    connectionFirstWordIdx = null;
+                    renderSentence();
+                    redrawCanvas();
+                }
+            } else if (selectedTool === 'eraser') {
+                delete userColorMap[wordIdx];
+                delete userMorphoMap[wordIdx];
+                renderSentence();
+                evaluateProgress();
+            } else {
+                userColorMap[wordIdx] = selectedTool;
+                renderSentence();
+                openMorphoModal(wordIdx);
+            }
+        }
+
+        // MORPHOLOGY MODAL DIALOG
+        function openMorphoModal(wordIdx) {
+            activeModalWordIdx = wordIdx;
+            const wordObj = dataset[currentLevel][currentSentenceIdx].words[wordIdx];
+            document.getElementById('modal-word-text').textContent = wordObj.text;
+
+            const optionsContainer = document.getElementById('morpho-options');
+            optionsContainer.innerHTML = '';
+
+            let shuffledOpts = [...wordObj.options];
+            shuffledOpts.sort(() => Math.random() - 0.5);
+
+            shuffledOpts.forEach((opt) => {
+                const optBtn = document.createElement('button');
+                optBtn.className = "w-full text-left p-3.5 rounded-xl bg-slate-700 hover:bg-amber-600/30 hover:border-amber-400 border border-slate-600 font-semibold text-sm transition-all flex justify-between items-center";
+                optBtn.innerHTML = `<span>${opt.label}</span> <span class="text-xs opacity-50">➔</span>`;
+                optBtn.onclick = () => {
+                    userMorphoMap[wordIdx] = opt.label;
+                    closeMorphoModal();
+                    renderSentence();
+                    evaluateProgress();
+                };
+                optionsContainer.appendChild(optBtn);
+            });
+
+            document.getElementById('morpho-modal').classList.remove('hidden');
+        }
+
+        function closeMorphoModal() {
+            document.getElementById('morpho-modal').classList.add('hidden');
+            activeModalWordIdx = null;
+        }
+
+        // CRISP SVG ARROWS DRAWING LOGIC
+        function redrawCanvas() {
+            const svg = document.getElementById('svg-canvas');
+            const mainArea = document.getElementById('main-area');
+            const mainRect = mainArea.getBoundingClientRect();
+
+            svg.setAttribute('width', mainArea.clientWidth);
+            svg.setAttribute('height', mainArea.clientHeight);
+
+            const defs = svg.querySelector('defs').outerHTML;
+            svg.innerHTML = defs;
+
+            userConnections.forEach(([fromIdx, toIdx]) => {
+                const el1 = document.getElementById(`word-card-${fromIdx}`);
+                const el2 = document.getElementById(`word-card-${toIdx}`);
+
+                if (!el1 || !el2) return;
+
+                const rect1 = el1.getBoundingClientRect();
+                const rect2 = el2.getBoundingClientRect();
+
+                const x1 = (rect1.left + rect1.width / 2) - mainRect.left;
+                const y1 = rect1.top - mainRect.top;
+                const x2 = (rect2.left + rect2.width / 2) - mainRect.left;
+                const y2 = rect2.top - mainRect.top;
+
+                const distance = Math.abs(x2 - x1);
+                const controlY = Math.min(y1, y2) - Math.max(35, distance * 0.3);
+
+                const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                const d = `M ${x1} ${y1} Q ${(x1 + x2) / 2} ${controlY} ${x2} ${y2}`;
+
+                path.setAttribute('d', d);
+                path.setAttribute('fill', 'none');
+                path.setAttribute('stroke', '#fbbf24');
+                path.setAttribute('stroke-width', '3.5');
+                path.setAttribute('marker-end', 'url(#arrowhead)');
+
+                svg.appendChild(path);
+            });
+        }
+
+        // CLEAR CONNECTIONS
+        function clearConnections() {
+            userConnections = [];
+            connectionFirstWordIdx = null;
+            renderSentence();
+            redrawCanvas();
+        }
+
+        // RESET CURRENT SENTENCE
+        function resetCurrentSentence() {
+            userColorMap = {};
+            userMorphoMap = {};
+            userWordTransMap = {};
+            userConnections = [];
+            connectionFirstWordIdx = null;
+            initSyntaxReordering();
+            selectTool('soggetto');
+            renderSentence();
+            redrawCanvas();
+            evaluateProgress();
+        }
+
+        // EVALUATE PROGRESS TO SHOW/HIDE SYNTAX REORDERING
+        function evaluateProgress() {
+            const sentenceData = dataset[currentLevel][currentSentenceIdx];
+            const totalWords = sentenceData.words.length;
+            let isComplete = true;
+
+            for (let i = 0; i < totalWords; i++) {
+                if (!userColorMap[i] || !userMorphoMap[i] || !userWordTransMap[i] || userWordTransMap[i] === "") {
+                    isComplete = false;
+                    break;
+                }
+            }
+
+            const reorderSection = document.getElementById('syntax-reordering-section');
+            if (isComplete) {
+                reorderSection.classList.remove('hidden');
+                // Scroll in visuale morbido per mostrare la nuova sezione
+                setTimeout(() => {
+                    reorderSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }, 150);
+            } else {
+                reorderSection.classList.add('hidden');
+            }
+        }
+    </script>
+</body>
+</html>
