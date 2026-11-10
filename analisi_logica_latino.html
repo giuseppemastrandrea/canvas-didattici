@@ -38,30 +38,30 @@
         }
     </style>
 </head>
-<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col justify-between overflow-x-hidden relative">
+<body class="bg-slate-100 text-slate-800 min-h-screen flex flex-col justify-between overflow-x-hidden relative">
 
     <!-- TOP HEADER / CONTROL BAR -->
-    <header class="bg-slate-800 border-b border-slate-700 p-4 shadow-lg sticky top-0 z-40">
+    <header class="bg-white border-b border-slate-200 p-4 shadow-lg sticky top-0 z-40">
         <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
             
             <!-- App Title -->
             <div class="flex items-center space-x-3 w-full md:w-auto justify-between md:justify-start">
                 <div class="flex items-center space-x-3">
-                    <a href="./index.html" title="Torna all'elenco dei Canvas Didattici" class="bg-slate-700/80 hover:bg-slate-600 text-slate-200 px-3 py-2 rounded-2xl transition-colors flex items-center gap-1.5 text-xs font-bold border border-slate-600">
+                    <a href="./index.html" title="Torna all'elenco dei Canvas Didattici" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-2 rounded-2xl transition-colors flex items-center gap-1.5 text-xs font-bold border border-slate-300">
                         <span>←</span> <span class="hidden sm:inline">Tutti i Canvas</span>
                     </a>
                     <div class="bg-amber-500 text-slate-900 font-extrabold rounded-2xl p-2.5 text-2xl shadow-md tracking-wider">
                         🏛️ LATIN
                     </div>
                     <div>
-                        <h1 class="text-xl md:text-2xl font-bold text-white tracking-wide">Analisi della Frase Latina</h1>
-                        <p class="text-xs text-amber-400 font-semibold uppercase tracking-wider">Strumento Didattico per LIM</p>
+                        <h1 class="text-xl md:text-2xl font-bold text-slate-900 tracking-wide">Analisi della Frase Latina</h1>
+                        <p class="text-xs text-amber-700 font-semibold uppercase tracking-wider">Strumento Didattico per LIM</p>
                     </div>
                 </div>
             </div>
 
             <!-- Level Selector Buttons -->
-            <div class="flex items-center bg-slate-900 p-1.5 rounded-2xl border border-slate-700 gap-2 w-full md:w-auto justify-center">
+            <div class="flex items-center bg-slate-100 p-1.5 rounded-2xl border border-slate-200 gap-2 w-full md:w-auto justify-center">
                 <button onclick="setLevel(1)" id="lvl-btn-1" class="px-4 py-2 rounded-xl font-bold text-sm md:text-base transition-all duration-200">
                     🟢 Livello 1
                 </button>
@@ -75,7 +75,7 @@
 
             <!-- Sentence Dropdown (Full untruncated text) -->
             <div class="flex items-center space-x-2 w-full md:w-auto">
-                <select id="sentence-select" onchange="loadSentence(parseInt(this.value))" class="w-full md:w-auto bg-slate-700 text-amber-300 font-bold border border-slate-600 rounded-xl px-4 py-2.5 text-sm md:text-base focus:outline-none focus:ring-2 focus:ring-amber-500 cursor-pointer shadow-inner">
+                <select id="sentence-select" onchange="loadSentence(parseInt(this.value))" class="w-full md:w-auto bg-slate-100 text-amber-700 font-bold border border-slate-300 rounded-xl px-4 py-2.5 text-sm md:text-base focus:outline-none focus:ring-2 focus:ring-amber-500 cursor-pointer shadow-inner">
                     <!-- Dynamic Options -->
                 </select>
             </div>
@@ -90,40 +90,40 @@
         <svg id="svg-canvas" class="absolute inset-0 w-full h-full z-10 overflow-visible">
             <defs>
                 <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-                    <polygon points="0 0, 10 3.5, 0 7" fill="#fbbf24" />
+                    <polygon points="0 0, 10 3.5, 0 7" fill="#d97706" />
                 </marker>
             </defs>
         </svg>
 
         <!-- FULL SENTENCE HEADER BANNER -->
-        <div class="z-20 mb-6 bg-slate-800 border border-slate-700 px-8 py-3 rounded-2xl shadow-xl text-center max-w-4xl w-full">
-            <span class="text-xs text-amber-400 font-extrabold uppercase tracking-widest block mb-1">Frase Selezionata</span>
-            <h2 id="full-sentence-display" class="latin-font text-2xl md:text-4xl font-bold text-white tracking-wide">
+        <div class="z-20 mb-6 bg-white border border-slate-200 px-8 py-3 rounded-2xl shadow-xl text-center max-w-4xl w-full">
+            <span class="text-xs text-amber-700 font-extrabold uppercase tracking-widest block mb-1">Frase Selezionata</span>
+            <h2 id="full-sentence-display" class="latin-font text-2xl md:text-4xl font-bold text-slate-900 tracking-wide">
                 <!-- Loaded dynamically -->
             </h2>
         </div>
 
         <!-- LATIN SENTENCE DISPLAY / INTERACTIVE CONTAINER WITH WORD-BY-WORD TRANSLATION SLOTS -->
-        <div id="sentence-container" class="z-20 flex flex-wrap justify-center items-start gap-4 md:gap-6 max-w-6xl p-6 md:p-8 bg-slate-800/80 rounded-3xl border-2 border-slate-700 shadow-2xl backdrop-blur-sm min-h-[160px] mb-8">
+        <div id="sentence-container" class="z-20 flex flex-wrap justify-center items-start gap-4 md:gap-6 max-w-6xl p-6 md:p-8 bg-white/80 rounded-3xl border-2 border-slate-200 shadow-2xl backdrop-blur-sm min-h-[160px] mb-8">
             <!-- Word Cards & Word Translation Slots generated dynamically -->
         </div>
 
         <!-- SECTION: SLOT-BASED ITALIAN SYNTAX REORDERING -->
-        <div id="syntax-reordering-section" class="hidden z-20 w-full max-w-5xl bg-slate-800/90 border border-slate-700 rounded-3xl p-6 shadow-xl mb-6">
-            <h3 class="text-sm font-extrabold uppercase text-amber-400 tracking-wider mb-2 flex items-center gap-2">
+        <div id="syntax-reordering-section" class="hidden z-20 w-full max-w-5xl bg-white/90 border border-slate-200 rounded-3xl p-6 shadow-xl mb-6">
+            <h3 class="text-sm font-extrabold uppercase text-amber-700 tracking-wider mb-2 flex items-center gap-2">
                 <span>🔄</span> Riordino Sintattico (Sintassi Italiana):
             </h3>
-            <p class="text-xs text-slate-400 mb-4">Tocca una parola nel banco in basso per inserire la prima disponibile nello slot vuoto, o tocca uno slot compilato per rimuoverla.</p>
+            <p class="text-xs text-slate-500 mb-4">Tocca una parola nel banco in basso per inserire la prima disponibile nello slot vuoto, o tocca uno slot compilato per rimuoverla.</p>
             
             <!-- Target Slots -->
-            <div id="target-slots" class="flex flex-wrap items-center gap-3 bg-slate-900/60 p-4 rounded-2xl border border-slate-700 min-h-[85px] mb-4">
+            <div id="target-slots" class="flex flex-wrap items-center gap-3 bg-slate-100/80 p-4 rounded-2xl border border-slate-200 min-h-[85px] mb-4">
                 <!-- Target slots populated dynamically -->
             </div>
 
             <!-- Word Pool Bank -->
             <div class="flex items-center justify-between">
-                <span class="text-xs font-bold text-slate-400 uppercase">Banco Parole:</span>
-                <button onclick="resetSyntaxSlots()" class="text-xs text-rose-400 hover:text-rose-300 font-bold underline">Reimposta Slot</button>
+                <span class="text-xs font-bold text-slate-500 uppercase">Banco Parole:</span>
+                <button onclick="resetSyntaxSlots()" class="text-xs text-rose-600 hover:text-rose-700 font-bold underline">Reimposta Slot</button>
             </div>
             <div id="word-pool" class="flex flex-wrap gap-2.5 mt-2">
                 <!-- Word pool items populated dynamically -->
@@ -131,22 +131,22 @@
         </div>
 
         <!-- Mode Indicator Badge -->
-        <div id="mode-badge" class="z-20 mt-2 px-4 py-1.5 rounded-xl text-xs font-bold uppercase tracking-widest bg-slate-800 border border-slate-700 text-slate-400 shadow">
+        <div id="mode-badge" class="z-20 mt-2 px-4 py-1.5 rounded-xl text-xs font-bold uppercase tracking-widest bg-white border border-slate-200 text-slate-500 shadow">
             Modalità Attiva: Evidenziatore (Tocca una parola per colorare o analizzare)
         </div>
 
     </main>
 
     <!-- MORPHOLOGY SELECTION MODAL (WITH SHUFFLED OPTIONS) -->
-    <div id="morpho-modal" class="hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
-        <div class="bg-slate-800 border-2 border-slate-600 rounded-3xl p-6 max-w-lg w-full shadow-2xl space-y-4">
-            <div class="flex justify-between items-center border-b border-slate-700 pb-3">
-                <h3 class="text-xl font-bold text-amber-400 flex items-center gap-2">
-                    <span>🔍</span> Analisi Morfologica: <span id="modal-word-text" class="latin-font text-white underline"></span>
+    <div id="morpho-modal" class="hidden fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white border-2 border-slate-300 rounded-3xl p-6 max-w-lg w-full shadow-2xl space-y-4">
+            <div class="flex justify-between items-center border-b border-slate-200 pb-3">
+                <h3 class="text-xl font-bold text-amber-700 flex items-center gap-2">
+                    <span>🔍</span> Analisi Morfologica: <span id="modal-word-text" class="latin-font text-slate-900 underline"></span>
                 </h3>
-                <button onclick="closeMorphoModal()" class="text-slate-400 hover:text-white font-bold text-xl px-2">✕</button>
+                <button onclick="closeMorphoModal()" class="text-slate-500 hover:text-slate-900 font-bold text-xl px-2">✕</button>
             </div>
-            <p class="text-sm text-slate-300">Scegli la classificazione grammaticale/morfologica corretta:</p>
+            <p class="text-sm text-slate-600">Scegli la classificazione grammaticale/morfologica corretta:</p>
             <div id="morpho-options" class="space-y-3">
                 <!-- Shuffled options populated dynamically -->
             </div>
@@ -154,50 +154,50 @@
     </div>
 
     <!-- INTERACTIVE TOOLBAR / PALETTE (BOTTOM STICKY) -->
-    <footer class="bg-slate-800 border-t border-slate-700 p-4 shadow-2xl z-30">
+    <footer class="bg-white border-t border-slate-200 p-4 shadow-2xl z-30">
         <div class="max-w-7xl mx-auto flex flex-col lg:flex-row items-center justify-between gap-4">
             
             <!-- Color Highlighting Tools -->
             <div class="flex flex-wrap items-center justify-center gap-2 md:gap-3 w-full lg:w-auto">
                 
                 <!-- Red: Soggetto -->
-                <button onclick="selectTool('soggetto')" id="tool-soggetto" class="color-tool px-4 py-3 rounded-2xl font-bold text-xs md:text-sm flex items-center space-x-2 bg-red-500/20 text-red-300 border-2 border-red-500 hover:bg-red-500/30 transition-all shadow-md">
+                <button onclick="selectTool('soggetto')" id="tool-soggetto" class="color-tool px-4 py-3 rounded-2xl font-bold text-xs md:text-sm flex items-center space-x-2 bg-red-50 text-red-700 border-2 border-red-500 hover:bg-red-100 transition-all shadow-md">
                     <span class="w-4 h-4 rounded-full bg-red-500 inline-block shadow"></span>
                     <span>Soggetto (Nom)</span>
                 </button>
 
                 <!-- Orange: Predicato -->
-                <button onclick="selectTool('predicato')" id="tool-predicato" class="color-tool px-4 py-3 rounded-2xl font-bold text-xs md:text-sm flex items-center space-x-2 bg-amber-500/20 text-amber-300 border-2 border-amber-500 hover:bg-amber-500/30 transition-all shadow-md">
+                <button onclick="selectTool('predicato')" id="tool-predicato" class="color-tool px-4 py-3 rounded-2xl font-bold text-xs md:text-sm flex items-center space-x-2 bg-amber-50 text-amber-700 border-2 border-amber-500 hover:bg-amber-100 transition-all shadow-md">
                     <span class="w-4 h-4 rounded-full bg-amber-500 inline-block shadow"></span>
                     <span>Predicato (Verb/Nom)</span>
                 </button>
 
                 <!-- Green: Oggetto -->
-                <button onclick="selectTool('oggetto')" id="tool-oggetto" class="color-tool px-4 py-3 rounded-2xl font-bold text-xs md:text-sm flex items-center space-x-2 bg-emerald-500/20 text-emerald-300 border-2 border-emerald-500 hover:bg-emerald-500/30 transition-all shadow-md">
+                <button onclick="selectTool('oggetto')" id="tool-oggetto" class="color-tool px-4 py-3 rounded-2xl font-bold text-xs md:text-sm flex items-center space-x-2 bg-emerald-50 text-emerald-700 border-2 border-emerald-500 hover:bg-emerald-100 transition-all shadow-md">
                     <span class="w-4 h-4 rounded-full bg-emerald-500 inline-block shadow"></span>
                     <span>Compl. Oggetto (Acc)</span>
                 </button>
 
                 <!-- Blue: Obliquo / Preposizionale -->
-                <button onclick="selectTool('obliquo')" id="tool-obliquo" class="color-tool px-4 py-3 rounded-2xl font-bold text-xs md:text-sm flex items-center space-x-2 bg-sky-500/20 text-sky-300 border-2 border-sky-500 hover:bg-sky-500/30 transition-all shadow-md">
+                <button onclick="selectTool('obliquo')" id="tool-obliquo" class="color-tool px-4 py-3 rounded-2xl font-bold text-xs md:text-sm flex items-center space-x-2 bg-sky-50 text-sky-700 border-2 border-sky-500 hover:bg-sky-100 transition-all shadow-md">
                     <span class="w-4 h-4 rounded-full bg-sky-400 inline-block shadow"></span>
                     <span>Compl. Obliquo / Luogo</span>
                 </button>
 
                 <!-- Purple: Specificazione / Attributo -->
-                <button onclick="selectTool('attributo')" id="tool-attributo" class="color-tool px-4 py-3 rounded-2xl font-bold text-xs md:text-sm flex items-center space-x-2 bg-purple-500/20 text-purple-300 border-2 border-purple-500 hover:bg-purple-500/30 transition-all shadow-md">
+                <button onclick="selectTool('attributo')" id="tool-attributo" class="color-tool px-4 py-3 rounded-2xl font-bold text-xs md:text-sm flex items-center space-x-2 bg-purple-50 text-purple-700 border-2 border-purple-500 hover:bg-purple-100 transition-all shadow-md">
                     <span class="w-4 h-4 rounded-full bg-purple-400 inline-block shadow"></span>
                     <span>Attr. / Genitivo</span>
                 </button>
 
                 <!-- Eraser -->
-                <button onclick="selectTool('eraser')" id="tool-eraser" class="color-tool px-4 py-3 rounded-2xl font-bold text-xs md:text-sm flex items-center space-x-2 bg-slate-700 text-slate-300 border-2 border-slate-500 hover:bg-slate-600 transition-all shadow-md">
+                <button onclick="selectTool('eraser')" id="tool-eraser" class="color-tool px-4 py-3 rounded-2xl font-bold text-xs md:text-sm flex items-center space-x-2 bg-slate-100 text-slate-600 border-2 border-slate-400 hover:bg-slate-200 transition-all shadow-md">
                     <span>🧹 Gomma</span>
                 </button>
             </div>
 
             <!-- Action Tools -->
-            <div class="flex items-center justify-center gap-2 md:gap-3 w-full lg:w-auto border-t lg:border-t-0 border-slate-700 pt-3 lg:pt-0">
+            <div class="flex items-center justify-center gap-2 md:gap-3 w-full lg:w-auto border-t lg:border-t-0 border-slate-200 pt-3 lg:pt-0">
                 
                 <!-- Toggle Connection Mode -->
                 <button onclick="selectTool('connect')" id="tool-connect" class="px-4 py-3 rounded-2xl font-bold text-xs md:text-sm bg-indigo-600 hover:bg-indigo-500 text-white border-2 border-indigo-400 transition-all shadow-lg flex items-center space-x-1.5">
@@ -205,7 +205,7 @@
                 </button>
 
                 <!-- Clear Connections -->
-                <button onclick="clearConnections()" class="px-3 py-3 rounded-2xl font-bold text-xs md:text-sm bg-slate-700 hover:bg-slate-600 text-slate-300 border border-slate-600 transition-all shadow">
+                <button onclick="clearConnections()" class="px-3 py-3 rounded-2xl font-bold text-xs md:text-sm bg-slate-100 hover:bg-slate-200 text-slate-600 border border-slate-300 transition-all shadow">
                     🗑️ Cancella Frecce
                 </button>
 
@@ -959,11 +959,11 @@
 
         // COLOR MAPPING CONFIGURATION
         const colorStyles = {
-            soggetto: { bg: "bg-red-500/30", border: "border-red-500", text: "text-red-200" },
-            predicato: { bg: "bg-amber-500/30", border: "border-amber-500", text: "text-amber-200" },
-            oggetto: { bg: "bg-emerald-500/30", border: "border-emerald-500", text: "text-emerald-200" },
-            obliquo: { bg: "bg-sky-500/30", border: "border-sky-400", text: "text-sky-200" },
-            attributo: { bg: "bg-purple-500/30", border: "border-purple-400", text: "text-purple-200" }
+            soggetto: { bg: "bg-red-100", border: "border-red-500", text: "text-red-800" },
+            predicato: { bg: "bg-amber-100", border: "border-amber-500", text: "text-amber-800" },
+            oggetto: { bg: "bg-emerald-100", border: "border-emerald-500", text: "text-emerald-800" },
+            obliquo: { bg: "bg-sky-100", border: "border-sky-400", text: "text-sky-800" },
+            attributo: { bg: "bg-purple-100", border: "border-purple-400", text: "text-purple-800" }
         };
 
         // STATE VARIABLES
@@ -997,7 +997,7 @@
                 if (i === lvl) {
                     btn.className = "px-4 py-2 rounded-xl font-bold text-sm md:text-base bg-amber-500 text-slate-900 shadow-lg scale-105 transition-all";
                 } else {
-                    btn.className = "px-4 py-2 rounded-xl font-bold text-sm md:text-base text-slate-400 hover:text-white hover:bg-slate-800 transition-all";
+                    btn.className = "px-4 py-2 rounded-xl font-bold text-sm md:text-base text-slate-500 hover:text-slate-900 hover:bg-white transition-all";
                 }
             });
 
@@ -1050,14 +1050,14 @@
 
             syntaxSlots.forEach((item, slotIdx) => {
                 const slot = document.createElement('div');
-                slot.className = "slot-box bg-slate-800 border-2 border-dashed border-slate-600 rounded-xl flex items-center justify-center p-3 text-sm font-semibold cursor-pointer hover:border-amber-400";
+                slot.className = "slot-box bg-white border-2 border-dashed border-slate-300 rounded-xl flex items-center justify-center p-3 text-sm font-semibold cursor-pointer hover:border-amber-400";
                 
                 if (item !== null) {
-                    slot.className = "slot-box bg-amber-500/20 border-2 border-amber-500 text-amber-300 rounded-xl flex items-center justify-center p-3 text-sm font-bold shadow cursor-pointer";
+                    slot.className = "slot-box bg-amber-50 border-2 border-amber-500 text-amber-700 rounded-xl flex items-center justify-center p-3 text-sm font-bold shadow cursor-pointer";
                     slot.textContent = item.word;
                     slot.onclick = () => returnWordToPool(slotIdx);
                 } else {
-                    slot.innerHTML = `<span class="text-slate-500 text-xs">Slot ${slotIdx + 1}</span>`;
+                    slot.innerHTML = `<span class="text-slate-400 text-xs">Slot ${slotIdx + 1}</span>`;
                     slot.onclick = () => placeWordInNextSlot(slotIdx);
                 }
                 slotsContainer.appendChild(slot);
@@ -1065,7 +1065,7 @@
 
             syntaxPool.forEach((poolItem, poolIdx) => {
                 const pill = document.createElement('div');
-                pill.className = "bg-slate-700 hover:bg-amber-600 hover:text-slate-900 border border-slate-600 px-4 py-2.5 rounded-xl font-bold text-sm cursor-pointer shadow transition-all";
+                pill.className = "bg-slate-100 hover:bg-amber-600 hover:text-slate-900 border border-slate-300 px-4 py-2.5 rounded-xl font-bold text-sm cursor-pointer shadow transition-all";
                 pill.textContent = poolItem.word;
                 pill.onclick = () => assignPoolItemToFirstEmptySlot(poolIdx);
                 poolContainer.appendChild(pill);
@@ -1111,7 +1111,7 @@
                 card.onclick = () => handleWordClick(wordIdx);
 
                 let activeRole = userColorMap[wordIdx];
-                let colorClasses = "bg-slate-800/90 border-2 border-slate-600 text-slate-100 hover:border-amber-400";
+                let colorClasses = "bg-white/90 border-2 border-slate-300 text-slate-800 hover:border-amber-400";
                 let badgeHTML = '';
 
                 if (activeRole && colorStyles[activeRole]) {
@@ -1120,11 +1120,11 @@
                 }
 
                 if (userMorphoMap[wordIdx]) {
-                    badgeHTML = `<span class="text-[10px] uppercase font-bold px-2 py-0.5 rounded-full bg-slate-900/90 text-amber-300 border border-amber-500/40 mt-1 block text-center max-w-[140px] truncate">${userMorphoMap[wordIdx]}</span>`;
+                    badgeHTML = `<span class="text-[10px] uppercase font-bold px-2 py-0.5 rounded-full bg-slate-50 text-amber-700 border border-amber-500/40 mt-1 block text-center max-w-[140px] truncate">${userMorphoMap[wordIdx]}</span>`;
                 }
 
                 if (selectedTool === 'connect' && connectionFirstWordIdx === wordIdx) {
-                    colorClasses += " ring-4 ring-indigo-400 ring-offset-2 ring-offset-slate-900 animate-pulse";
+                    colorClasses += " ring-4 ring-indigo-400 ring-offset-2 ring-offset-white animate-pulse";
                 }
 
                 card.className = `word-card p-3 md:p-4 rounded-2xl flex flex-col items-center justify-center min-w-[95px] md:min-w-[115px] ${colorClasses}`;
@@ -1136,10 +1136,10 @@
 
                 // SINGLE-WORD TRANSLATION SLOT (3 ALTERNATIVES)
                 const transSlot = document.createElement('div');
-                transSlot.className = "w-full max-w-[130px] bg-slate-900/90 border border-slate-700 rounded-xl p-1.5 shadow-inner flex flex-col items-center";
+                transSlot.className = "w-full max-w-[130px] bg-slate-50 border border-slate-200 rounded-xl p-1.5 shadow-inner flex flex-col items-center";
 
                 const transSelect = document.createElement('select');
-                transSelect.className = "w-full bg-slate-800 text-amber-300 font-semibold text-xs border border-slate-600 rounded-lg p-1 text-center cursor-pointer focus:outline-none focus:ring-1 focus:ring-amber-400";
+                transSelect.className = "w-full bg-white text-amber-700 font-semibold text-xs border border-slate-300 rounded-lg p-1 text-center cursor-pointer focus:outline-none focus:ring-1 focus:ring-amber-400";
 
                 const defaultOpt = document.createElement('option');
                 defaultOpt.value = "";
@@ -1167,11 +1167,11 @@
                     userWordTransMap[wordIdx] = selectedVal;
                     const choice = wordObj.translations.find(t => t.label === selectedVal);
                     if (choice && choice.correct) {
-                        transSlot.className = "w-full max-w-[130px] bg-emerald-950/80 border-2 border-emerald-500 rounded-xl p-1.5 shadow flex flex-col items-center";
+                        transSlot.className = "w-full max-w-[130px] bg-emerald-50 border-2 border-emerald-500 rounded-xl p-1.5 shadow flex flex-col items-center";
                     } else if (choice) {
-                        transSlot.className = "w-full max-w-[130px] bg-rose-950/80 border-2 border-rose-500 rounded-xl p-1.5 shadow flex flex-col items-center";
+                        transSlot.className = "w-full max-w-[130px] bg-rose-50 border-2 border-rose-500 rounded-xl p-1.5 shadow flex flex-col items-center";
                     } else {
-                        transSlot.className = "w-full max-w-[130px] bg-slate-900/90 border border-slate-700 rounded-xl p-1.5 shadow-inner flex flex-col items-center";
+                        transSlot.className = "w-full max-w-[130px] bg-slate-50 border border-slate-200 rounded-xl p-1.5 shadow-inner flex flex-col items-center";
                     }
                     evaluateProgress();
                 };
@@ -1180,9 +1180,9 @@
                 if (userWordTransMap[wordIdx]) {
                     const choice = wordObj.translations.find(t => t.label === userWordTransMap[wordIdx]);
                     if (choice && choice.correct) {
-                        transSlot.className = "w-full max-w-[130px] bg-emerald-950/80 border-2 border-emerald-500 rounded-xl p-1.5 shadow flex flex-col items-center";
+                        transSlot.className = "w-full max-w-[130px] bg-emerald-50 border-2 border-emerald-500 rounded-xl p-1.5 shadow flex flex-col items-center";
                     } else if (choice) {
-                        transSlot.className = "w-full max-w-[130px] bg-rose-950/80 border-2 border-rose-500 rounded-xl p-1.5 shadow flex flex-col items-center";
+                        transSlot.className = "w-full max-w-[130px] bg-rose-50 border-2 border-rose-500 rounded-xl p-1.5 shadow flex flex-col items-center";
                     }
                 }
 
@@ -1205,24 +1205,24 @@
             const badge = document.getElementById('mode-badge');
             if (toolName === 'connect') {
                 badge.textContent = "Modalità Attiva: Collega Parole (Tocca due parole per tracciare una freccia)";
-                badge.className = "z-20 mt-2 px-4 py-1.5 rounded-xl text-xs font-bold uppercase tracking-widest bg-indigo-900/80 border border-indigo-500 text-indigo-300 shadow animate-pulse";
+                badge.className = "z-20 mt-2 px-4 py-1.5 rounded-xl text-xs font-bold uppercase tracking-widest bg-indigo-50 border border-indigo-500 text-indigo-700 shadow animate-pulse";
             } else if (toolName === 'eraser') {
                 badge.textContent = "Modalità Attiva: Gomma (Tocca una parola per rimuovere colore e analisi)";
-                badge.className = "z-20 mt-2 px-4 py-1.5 rounded-xl text-xs font-bold uppercase tracking-widest bg-slate-800 border border-slate-600 text-slate-300 shadow";
+                badge.className = "z-20 mt-2 px-4 py-1.5 rounded-xl text-xs font-bold uppercase tracking-widest bg-white border border-slate-300 text-slate-600 shadow";
             } else {
                 badge.textContent = `Modalità Attiva: Evidenziatore [${toolName.toUpperCase()}] (Tocca per colorare e aprire l'analisi morfologica)`;
-                badge.className = "z-20 mt-2 px-4 py-1.5 rounded-xl text-xs font-bold uppercase tracking-widest bg-slate-800 border border-slate-700 text-amber-400 shadow";
+                badge.className = "z-20 mt-2 px-4 py-1.5 rounded-xl text-xs font-bold uppercase tracking-widest bg-white border border-slate-200 text-amber-700 shadow";
             }
 
-            document.querySelectorAll('.color-tool').forEach(btn => btn.classList.remove('ring-4', 'ring-white', 'scale-105'));
+            document.querySelectorAll('.color-tool').forEach(btn => btn.classList.remove('ring-4', 'ring-slate-800', 'scale-105'));
             const connectBtn = document.getElementById('tool-connect');
-            connectBtn.classList.remove('ring-4', 'ring-white', 'scale-105');
+            connectBtn.classList.remove('ring-4', 'ring-slate-800', 'scale-105');
 
             if (toolName === 'connect') {
-                connectBtn.classList.add('ring-4', 'ring-white', 'scale-105');
+                connectBtn.classList.add('ring-4', 'ring-slate-800', 'scale-105');
             } else {
                 const activeBtn = document.getElementById(`tool-${toolName}`);
-                if (activeBtn) activeBtn.classList.add('ring-4', 'ring-white', 'scale-105');
+                if (activeBtn) activeBtn.classList.add('ring-4', 'ring-slate-800', 'scale-105');
             }
 
             renderSentence();
@@ -1269,7 +1269,7 @@
 
             shuffledOpts.forEach((opt) => {
                 const optBtn = document.createElement('button');
-                optBtn.className = "w-full text-left p-3.5 rounded-xl bg-slate-700 hover:bg-amber-600/30 hover:border-amber-400 border border-slate-600 font-semibold text-sm transition-all flex justify-between items-center";
+                optBtn.className = "w-full text-left p-3.5 rounded-xl bg-slate-100 hover:bg-amber-600/30 hover:border-amber-400 border border-slate-300 font-semibold text-sm transition-all flex justify-between items-center";
                 optBtn.innerHTML = `<span>${opt.label}</span> <span class="text-xs opacity-50">➔</span>`;
                 optBtn.onclick = () => {
                     userMorphoMap[wordIdx] = opt.label;
@@ -1322,7 +1322,7 @@
 
                 path.setAttribute('d', d);
                 path.setAttribute('fill', 'none');
-                path.setAttribute('stroke', '#fbbf24');
+                path.setAttribute('stroke', '#d97706');
                 path.setAttribute('stroke-width', '3.5');
                 path.setAttribute('marker-end', 'url(#arrowhead)');
 
