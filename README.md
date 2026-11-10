@@ -16,6 +16,15 @@ Un'applicazione web interattiva per l'apprendimento e l'insegnamento della sinta
 - **3 Livelli di Difficoltà:** selezione di frasi classiche a complessità crescente.
 - **Verifica Morfologica:** finestre modali con opzioni randomizzate per verificare desinenze, casi e declinazioni.
 
+### 2. [Risoluzione Equazioni di 2° Grado](./equazioni_secondo_grado.html)
+Un canvas didattico interattivo per la visualizzazione dell'algoritmo di risoluzione delle equazioni di secondo grado:
+- **Flowchart Mermaid JS con Tracciamento:** diagramma di flusso strutturato con evidenziazione animata del ramo decisionale attivo corrispondente ai coefficienti inseriti.
+- **Supporto Completo di Tutti i Casi:** equazioni incomplete (monomie, pure, spurie) ed equazioni complete con discriminante $\Delta > 0$, $\Delta = 0$ e $\Delta < 0$.
+- **Risolutore Interattivo Passo-Passo:** calcolo esplicito del discriminante $\Delta$ (con formula ridotta se $b$ pari), radici esatte (frazioni e radicali) e decimali.
+- **Interpretazione Geometrica con la Parabola:** grafico SVG interattivo della parabola $y = ax^2 + bx + c$ con evidenziazione del vertice, asse di simmetria e punti di intersezione con l'asse $x$.
+- **8 Preset Didattici:** pulsanti rapidi con esempi classici pensati per la spiegazione alla LIM.
+- **Controlli LIM Avanzati:** Pan & Zoom (touch, rotella, trascinamento), schermo intero, esportazione diagramma SVG e visualizzazione/copia del codice sorgente Mermaid.
+
 ---
 
 ## 🚀 Come aggiungere nuovi Canvas
@@ -30,7 +39,9 @@ Un'applicazione web interattiva per l'apprendimento e l'insegnamento della sinta
 
 - HTML5 standard e Vanilla JavaScript (nessun build step richiesto)
 - [Tailwind CSS](https://tailwindcss.com/) via CDN per lo styling responsive
-- SVG per il rendering dinamico delle frecce di concordanza
+- [Mermaid JS](https://mermaid.js.org/) per il rendering dinamico e reattivo dei diagrammi di flusso
+- [KaTeX](https://katex.org/) per il rendering tipografico delle formule matematiche
+- SVG per il rendering dinamico delle frecce di concordanza e dei grafici di funzioni (parabole)
 - Compatibile con touch screen, LIM e dispositivi desktop / tablet
 
 ---
